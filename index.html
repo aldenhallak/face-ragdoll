@@ -2,740 +2,786 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enhanced Face Ragdoll</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      background: linear-gradient(135deg, #1a1a2e, #16213e);
-      color: white;
-      font-family: 'Arial', sans-serif;
-      user-select: none;
-    }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Enhanced Face Ragdoll</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+        }
 
-    #ui {
-      position: absolute;
-      top: 15px;
-      left: 15px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 15px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
+        #ui {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
-    #ui button {
-      margin: 5px 0;
-      padding: 10px 15px;
-      background: linear-gradient(45deg, #667eea, #764ba2);
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      display: block;
-      width: 100%;
-    }
+        #ui button {
+            margin: 5px 0;
+            padding: 10px 15px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: block;
+            width: 100%;
+        }
 
-    #ui button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    }
+        #ui button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
 
-    #ui button:active {
-      transform: translateY(0);
-    }
+        #ui button:active {
+            transform: translateY(0);
+        }
 
-    #ui button.danger {
-      background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    }
+        #ui button.danger {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
 
-    #ui button.success {
-      background: linear-gradient(45deg, #2ed573, #1dd1a1);
-    }
+        #ui button.success {
+            background: linear-gradient(45deg, #2ed573, #1dd1a1);
+        }
 
-    #ui input[type="file"] {
-      margin: 10px 0;
-      padding: 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      border-radius: 5px;
-      color: white;
-      width: 100%;
-    }
+        #ui input[type="file"] {
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            color: white;
+            width: 100%;
+        }
 
-    #ui input[type="range"] {
-      width: 100%;
-      margin: 5px 0;
-    }
+        #ui input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+        }
 
-    #ui label {
-      display: block;
-      margin: 5px 0;
-      font-size: 12px;
-      color: #ccc;
-    }
+        #ui label {
+            display: block;
+            margin: 5px 0;
+            font-size: 12px;
+            color: #ccc;
+        }
 
-    #stats {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 15px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      min-width: 150px;
-    }
+        #stats {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-width: 150px;
+        }
 
-    .stat-bar {
-      background: rgba(255, 255, 255, 0.2);
-      height: 10px;
-      border-radius: 5px;
-      overflow: hidden;
-      margin: 5px 0;
-    }
+        .stat-bar {
+            background: rgba(255, 255, 255, 0.2);
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
 
-    .stat-fill {
-      height: 100%;
-      transition: width 0.3s ease;
-    }
+        .stat-fill {
+            height: 100%;
+            transition: width 0.3s ease;
+        }
 
-    .health-bar { background: linear-gradient(90deg, #2ed573, #1dd1a1); }
-    .fire-bar { background: linear-gradient(90deg, #ff6b6b, #ee5a24); }
+        .health-bar {
+            background: linear-gradient(90deg, #2ed573, #1dd1a1);
+        }
 
-    canvas {
-      display: block;
-      cursor: crosshair;
-    }
+        .fire-bar {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+        }
 
-    .flame {
-      position: absolute;
-      width: 30px;
-      height: 30px;
-      background: radial-gradient(circle, #ff6b6b 20%, #ee5a24 60%, transparent 80%);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 5;
-      animation: flicker 0.5s infinite alternate;
-    }
+        canvas {
+            display: block;
+            cursor: crosshair;
+        }
 
-    .flame::before {
-      content: '';
-      position: absolute;
-      top: -10px;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 20px;
-      height: 20px;
-      background: radial-gradient(circle, #ffa726 30%, #ff7043 70%, transparent 90%);
-      border-radius: 50%;
-      animation: flicker 0.3s infinite alternate;
-    }
+        .flame {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #ff6b6b 20%, #ee5a24 60%, transparent 80%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+            animation: flicker 0.5s infinite alternate;
+        }
 
-    @keyframes flicker {
-      0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
-      100% { transform: scale(1.1) rotate(5deg); opacity: 1; }
-    }
+        .flame::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #ffa726 30%, #ff7043 70%, transparent 90%);
+            border-radius: 50%;
+            animation: flicker 0.3s infinite alternate;
+        }
 
-    .particle {
-      position: absolute;
-      width: 4px;
-      height: 4px;
-      background: #ffa726;
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 4;
-      animation: particle-fall 2s linear forwards;
-    }
+        @keyframes flicker {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 0.8;
+            }
 
-    @keyframes particle-fall {
-      0% { opacity: 1; transform: translateY(0); }
-      100% { opacity: 0; transform: translateY(100px); }
-    }
+            100% {
+                transform: scale(1.1) rotate(5deg);
+                opacity: 1;
+            }
+        }
 
-    .explosion {
-      position: absolute;
-      width: 100px;
-      height: 100px;
-      background: radial-gradient(circle, #ff6b6b 0%, #ee5a24 30%, transparent 70%);
-      border-radius: 50%;
-      pointer-events: none;
-      z-index: 6;
-      animation: explode 0.5s ease-out forwards;
-    }
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #ffa726;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 4;
+            animation: particle-fall 2s linear forwards;
+        }
 
-    @keyframes explode {
-      0% { transform: scale(0); opacity: 1; }
-      100% { transform: scale(3); opacity: 0; }
-    }
+        @keyframes particle-fall {
+            0% {
+                opacity: 1;
+                transform: translateY(0);
+            }
 
-    .damage-text {
-      position: absolute;
-      color: #ff6b6b;
-      font-weight: bold;
-      font-size: 24px;
-      pointer-events: none;
-      z-index: 7;
-      animation: damage-float 1s ease-out forwards;
-    }
+            100% {
+                opacity: 0;
+                transform: translateY(100px);
+            }
+        }
 
-    @keyframes damage-float {
-      0% { opacity: 1; transform: translateY(0) scale(1); }
-      100% { opacity: 0; transform: translateY(-50px) scale(1.2); }
-    }
+        .explosion {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ff6b6b 0%, #ee5a24 30%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 6;
+            animation: explode 0.5s ease-out forwards;
+        }
 
-    #instructions {
-      position: absolute;
-      bottom: 15px;
-      left: 15px;
-      z-index: 10;
-      background: rgba(0, 0, 0, 0.8);
-      padding: 10px;
-      border-radius: 10px;
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      max-width: 300px;
-      font-size: 12px;
-      color: #ccc;
-    }
-  </style>
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        .damage-text {
+            position: absolute;
+            color: #ff6b6b;
+            font-weight: bold;
+            font-size: 24px;
+            pointer-events: none;
+            z-index: 7;
+            animation: damage-float 1s ease-out forwards;
+        }
+
+        @keyframes damage-float {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-50px) scale(1.2);
+            }
+        }
+
+        #instructions {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            font-size: 12px;
+            color: #ccc;
+        }
+    </style>
 </head>
 
 <body>
-  <div id="ui">
-    <input type="file" id="faceInput" accept="image/*" />
-    <button id="igniteButton">🔥 Set on Fire</button>
-    <button id="freezeButton" class="success">❄️ Freeze</button>
-    <button id="explodeButton" class="danger">💥 Explode</button>
-    <button id="resetButton">🔄 Reset Ragdoll</button>
-    
-    <label>Gravity: <span id="gravityValue">1.0</span></label>
-    <input type="range" id="gravitySlider" min="0" max="2" step="0.1" value="1.0">
-    
-    <label>Fire Intensity: <span id="fireValue">1.0</span></label>
-    <input type="range" id="fireSlider" min="0.5" max="3" step="0.1" value="1.0">
-    
-    <button id="soundToggle">🔊 Sound: ON</button>
-  </div>
+    <div id="ui">
+        <input type="file" id="faceInput" accept="image/*" />
+        <button id="igniteButton">🔥 Set on Fire</button>
+        <button id="freezeButton" class="success">❄️ Freeze</button>
+        <button id="explodeButton" class="danger">💥 Explode</button>
+        <button id="resetButton">🔄 Reset Ragdoll</button>
 
-  <div id="stats">
-    <div>Health: <span id="healthText">100</span>%</div>
-    <div class="stat-bar">
-      <div class="stat-fill health-bar" id="healthBar" style="width: 100%"></div>
+        <label>Gravity: <span id="gravityValue">1.0</span></label>
+        <input type="range" id="gravitySlider" min="0" max="2" step="0.1" value="1.0">
+
+        <label>Fire Intensity: <span id="fireValue">1.0</span></label>
+        <input type="range" id="fireSlider" min="0.5" max="3" step="0.1" value="1.0">
+
+        <button id="soundToggle">🔊 Sound: ON</button>
     </div>
-    
-    <div>Fire Level: <span id="fireText">0</span>%</div>
-    <div class="stat-bar">
-      <div class="stat-fill fire-bar" id="fireBar" style="width: 0%"></div>
+
+    <div id="stats">
+        <div>Health: <span id="healthText">100</span>%</div>
+        <div class="stat-bar">
+            <div class="stat-fill health-bar" id="healthBar" style="width: 100%"></div>
+        </div>
+
+        <div>Fire Level: <span id="fireText">0</span>%</div>
+        <div class="stat-bar">
+            <div class="stat-fill fire-bar" id="fireBar" style="width: 0%"></div>
+        </div>
+
+        <div>Hits: <span id="hitCount">0</span></div>
+        <div>Status: <span id="status">Alive</span></div>
     </div>
-    
-    <div>Hits: <span id="hitCount">0</span></div>
-    <div>Status: <span id="status">Alive</span></div>
-  </div>
 
-  <div id="instructions">
-    <strong>Controls:</strong><br>
-    • Click to punch the ragdoll<br>
-    • Drag to move body parts<br>
-    • Use buttons to apply effects<br>
-    • Upload your own face image<br>
-    • Adjust gravity and fire intensity
-  </div>
+    <div id="instructions">
+        <strong>Controls:</strong><br>
+        • Click to punch the ragdoll<br>
+        • Drag to move body parts<br>
+        • Use buttons to apply effects<br>
+        • Upload your own face image<br>
+        • Adjust gravity and fire intensity
+    </div>
 
-  <canvas id="gameCanvas"></canvas>
+    <canvas id="gameCanvas"></canvas>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
-  <script>
-    const {
-      Engine, Render, World, Bodies, Body, Mouse, MouseConstraint,
-      Constraint, Composite, Events
-    } = Matter;
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+    <script>
+        const {
+            Engine, Render, World, Bodies, Body, Mouse, MouseConstraint,
+            Constraint, Composite, Events
+        } = Matter;
 
-    const engine = Engine.create();
-    const canvas = document.getElementById('gameCanvas');
+        const engine = Engine.create();
+        const canvas = document.getElementById('gameCanvas');
 
-    const render = Render.create({
-      canvas: canvas,
-      engine: engine,
-      options: {
-        width: window.innerWidth,
-        height: window.innerHeight,
-        wireframes: false,
-        background: 'transparent',
-        showAngleIndicator: false,
-        showVelocity: false
-      }
-    });
+        const render = Render.create({
+            canvas: canvas,
+            engine: engine,
+            options: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+                wireframes: false,
+                background: 'transparent',
+                showAngleIndicator: false,
+                showVelocity: false
+            }
+        });
 
-    // Game state
-    let ragdollParts = [];
-    let burning = false;
-    let frozen = false;
-    let flameElements = [];
-    let health = 1000;
-    let fireLevel = 0;
-    let dead = false;
-    let hitCount = 0;
-    let soundEnabled = true;
-    let gravityScale = 1.0;
-    let fireIntensity = 1.0;
-    let didDrag = false; // <-- FIX: Flag to distinguish click from drag
+        // Game state
+        let ragdollParts = [];
+        let burning = false;
+        let frozen = false;
+        let flameElements = [];
+        let health = 1000;
+        let fireLevel = 0;
+        let dead = false;
+        let hitCount = 0;
+        let soundEnabled = true;
+        let gravityScale = 1.0;
+        let fireIntensity = 1.0;
+        let didDrag = false; // <-- FIX: Flag to distinguish click from drag
 
-    // Face texture state
-    const defaultFaceSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZmRiYmYiLz4KPGNpcmNsZSBjeD0iMjgiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzMzMyIvPgo8Y2lyY2xlIGN4PSI1MiIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMzMzIi8+CjxlbGxpcHNlIGN4PSI0MCIgY3k9IjUwIiByeD0iMTAiIHJ5PSI1IiBmaWxsPSIjZmY2YjZiIi8+Cjwvc3ZnPgo=';
-    let currentFaceTexture = defaultFaceSrc;
-    let currentFaceScale = { x: 1, y: 1 };
+        // Face texture state
+        const defaultFaceSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iODAiIHZpZXdCb3g9IjAgMCA4MCA4MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDAiIGN5PSI0MCIgcj0iNDAiIGZpbGw9IiNmZmRiYmYiLz4KPGNpcmNsZSBjeD0iMjgiIGN5PSIzMCIgcj0iNCIgZmlsbD0iIzMzMyIvPgo8Y2lyY2xlIGN4PSI1MiIgY3k9IjMwIiByPSI0IiBmaWxsPSIjMzMzIi8+CjxlbGxpcHNlIGN4PSI0MCIgY3k9IjUwIiByeD0iMTAiIHJ5PSI1IiBmaWxsPSIjZmY2YjZiIi8+Cjwvc3ZnPgo=';
+        let currentFaceTexture = defaultFaceSrc;
+        let currentFaceScale = { x: 1, y: 1 };
 
-    // UI elements
-    const faceInput = document.getElementById('faceInput');
-    const igniteButton = document.getElementById('igniteButton');
-    const freezeButton = document.getElementById('freezeButton');
-    const explodeButton = document.getElementById('explodeButton');
-    const resetButton = document.getElementById('resetButton');
-    const gravitySlider = document.getElementById('gravitySlider');
-    const fireSlider = document.getElementById('fireSlider');
-    const soundToggle = document.getElementById('soundToggle');
-    const healthBar = document.getElementById('healthBar');
-    const fireBar = document.getElementById('fireBar');
-    const healthText = document.getElementById('healthText');
-    const fireText = document.getElementById('fireText');
-    const hitCountText = document.getElementById('hitCount');
-    const statusText = document.getElementById('status');
-    const gravityValue = document.getElementById('gravityValue');
-    const fireValue = document.getElementById('fireValue');
+        // UI elements
+        const faceInput = document.getElementById('faceInput');
+        const igniteButton = document.getElementById('igniteButton');
+        const freezeButton = document.getElementById('freezeButton');
+        const explodeButton = document.getElementById('explodeButton');
+        const resetButton = document.getElementById('resetButton');
+        const gravitySlider = document.getElementById('gravitySlider');
+        const fireSlider = document.getElementById('fireSlider');
+        const soundToggle = document.getElementById('soundToggle');
+        const healthBar = document.getElementById('healthBar');
+        const fireBar = document.getElementById('fireBar');
+        const healthText = document.getElementById('healthText');
+        const fireText = document.getElementById('fireText');
+        const hitCountText = document.getElementById('hitCount');
+        const statusText = document.getElementById('status');
+        const gravityValue = document.getElementById('gravityValue');
+        const fireValue = document.getElementById('fireValue');
 
-    // Create world boundaries
-    function createBoundaries() {
-      const wallOptions = { 
-        isStatic: true,
-        render: { fillStyle: 'transparent' } // Make walls invisible
-      };
-      const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 50, window.innerWidth, 100, wallOptions);
-      const leftWall = Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
-      const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
-      const topWall = Bodies.rectangle(window.innerWidth / 2, -50, window.innerWidth, 100, wallOptions);
-      
-      World.add(engine.world, [ground, leftWall, rightWall, topWall]);
-    }
-
-    // Create ragdoll
-    function makeRagdoll() {
-      const centerX = window.innerWidth / 2;
-      const centerY = window.innerHeight / 2 - 100;
-
-      const head = Bodies.circle(centerX, centerY - 120, 40, {
-        restitution: 0.6,
-        density: 0.002,
-        render: {
-          sprite: {
-            texture: currentFaceTexture,
-            xScale: currentFaceScale.x,
-            yScale: currentFaceScale.y
-          }
-        }
-      });
-
-      const body = Bodies.rectangle(centerX, centerY - 40, 30, 80, {
-        restitution: 0.6,
-        density: 0.005,
-        render: { fillStyle: '#8B4513' }
-      });
-
-      const leftArm = Bodies.rectangle(centerX - 45, centerY - 40, 60, 20, {
-        restitution: 0.6,
-        density: 0.001,
-        render: { fillStyle: '#CD853F' }
-      });
-
-      const rightArm = Bodies.rectangle(centerX + 45, centerY - 40, 60, 20, {
-        restitution: 0.6,
-        density: 0.001,
-        render: { fillStyle: '#CD853F' }
-      });
-
-      const leftLeg = Bodies.rectangle(centerX - 15, centerY + 60, 20, 60, {
-        restitution: 0.6,
-        density: 0.003,
-        render: { fillStyle: '#4682B4' }
-      });
-
-      const rightLeg = Bodies.rectangle(centerX + 15, centerY + 60, 20, 60, {
-        restitution: 0.6,
-        density: 0.003,
-        render: { fillStyle: '#4682B4' }
-      });
-
-      const constraints = [
-        Constraint.create({ bodyA: head, bodyB: body, pointA: { x: 0, y: 35 }, pointB: { x: 0, y: -40 }, stiffness: 0.8, render: { visible: false } }),
-        Constraint.create({ bodyA: body, bodyB: leftArm, pointA: { x: -15, y: -30 }, pointB: { x: 30, y: 0 }, stiffness: 0.6, render: { visible: false } }),
-        Constraint.create({ bodyA: body, bodyB: rightArm, pointA: { x: 15, y: -30 }, pointB: { x: -30, y: 0 }, stiffness: 0.6, render: { visible: false } }),
-        Constraint.create({ bodyA: body, bodyB: leftLeg, pointA: { x: -10, y: 40 }, pointB: { x: 0, y: -30 }, stiffness: 0.6, render: { visible: false } }),
-        Constraint.create({ bodyA: body, bodyB: rightLeg, pointA: { x: 10, y: 40 }, pointB: { x: 0, y: -30 }, stiffness: 0.6, render: { visible: false } })
-      ];
-
-      ragdollParts = [head, body, leftArm, rightArm, leftLeg, rightLeg, ...constraints];
-      World.add(engine.world, ragdollParts);
-    }
-
-    // Sound effects
-    function playSound(frequency, duration = 100) {
-      if (!soundEnabled) return;
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-      const oscillator = audioContext.createOscillator();
-      const gainNode = audioContext.createGain();
-      oscillator.connect(gainNode);
-      gainNode.connect(audioContext.destination);
-      oscillator.frequency.value = frequency;
-      oscillator.type = 'sine';
-      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
-      oscillator.start(audioContext.currentTime);
-      oscillator.stop(audioContext.currentTime + duration / 1000);
-    }
-
-    // Visual effects
-    function createExplosion(x, y) {
-      const explosion = document.createElement('div');
-      explosion.className = 'explosion';
-      explosion.style.left = `${x - 50}px`;
-      explosion.style.top = `${y - 50}px`;
-      document.body.appendChild(explosion);
-      setTimeout(() => explosion.remove(), 500);
-    }
-
-    function showDamage(x, y, damage) {
-      const damageText = document.createElement('div');
-      damageText.className = 'damage-text';
-      damageText.textContent = `-${damage}`;
-      damageText.style.left = `${x}px`;
-      damageText.style.top = `${y}px`;
-      document.body.appendChild(damageText);
-      setTimeout(() => damageText.remove(), 1000);
-    }
-
-    // Game mechanics
-    function takeDamage(amount, x, y) {
-      if (dead) return;
-      health = Math.max(0, health - amount);
-      if (amount > 0) {
-          showDamage(x, y, amount);
-          playSound(200 + Math.random() * 200, 150);
-      }
-      if (health <= 0) {
-        explodeRagdoll();
-      }
-      updateUI();
-    }
-
-    function explodeRagdoll() {
-      if (dead) return;
-      dead = true;
-      statusText.textContent = 'Dead';
-      statusText.style.color = '#ff6b6b';
-      ragdollParts.slice(0, 6).forEach(part => {
-        Body.applyForce(part, part.position, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
-        createExplosion(part.position.x, part.position.y);
-      });
-      flameElements.forEach(el => el.el.remove());
-      flameElements = [];
-      burning = false;
-      playSound(100, 500);
-    }
-
-    function updateUI() {
-      healthText.textContent = Math.round(health);
-      fireText.textContent = Math.round(fireLevel);
-      hitCountText.textContent = hitCount;
-      healthBar.style.width = `${health/10}%`;
-      fireBar.style.width = `${fireLevel}%`;
-      healthBar.style.background = '';
-      healthBar.className = 'stat-fill health-bar';
-      if (health <= 600 && health > 300) {
-        healthBar.style.background = 'linear-gradient(90deg, #ffa726, #ff7043)';
-      } else if (health <= 300) {
-        healthBar.style.background = 'linear-gradient(90deg, #ff6b6b, #ee5a24)';
-      }
-    }
-
-    let outerFaceImage = null;
-
-    // Event listeners
-    faceInput.addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        const faceImage = new Image();
-        faceImage.onload = () => {
-          const head = ragdollParts[0];
-          if (head && head.render && head.render.sprite) {
-            currentFaceTexture = faceImage.src; // <-- FIX: Store new texture
-            // <-- FIX: Store new scale for reset
-            currentFaceScale = {
-              x: 80 / faceImage.width,
-              y: 80 / faceImage.height
+        // Create world boundaries
+        function createBoundaries() {
+            const wallOptions = {
+                isStatic: true,
+                render: { fillStyle: 'transparent' } // Make walls invisible
             };
-            head.render.sprite.texture = currentFaceTexture;
-            head.render.sprite.xScale = currentFaceScale.x;
-            head.render.sprite.yScale = currentFaceScale.y;
-          }
-        };
-        faceImage.src = event.target.result;
-      };
-      outerFaceImage = file;
-      reader.readAsDataURL(file);
-    });
+            const ground = Bodies.rectangle(window.innerWidth / 2, window.innerHeight + 50, window.innerWidth, 100, wallOptions);
+            const leftWall = Bodies.rectangle(-50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+            const rightWall = Bodies.rectangle(window.innerWidth + 50, window.innerHeight / 2, 100, window.innerHeight, wallOptions);
+            const topWall = Bodies.rectangle(window.innerWidth / 2, -50, window.innerWidth, 100, wallOptions);
 
-    canvas.addEventListener('click', (e) => {
-      // <-- FIX: Check drag flag to differentiate click from drag-release
-      if (didDrag) {
-        didDrag = false;
-        return;
-      }
-      if (dead) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      
-      let hitSomething = false;
-      
-      ragdollParts.slice(0, 6).forEach(part => {
-        const dx = x - part.position.x;
-        const dy = y - part.position.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        if (dist < 60) {
-          hitSomething = true;
-          hitCount++;
-          
-          const force = 0.3;
-          Body.applyForce(part, part.position, {
-            x: (dx / dist) * force + (Math.random() - 0.5) * 0.1,
-            y: (dy / dist) * force - 0.1
-          });
-          
-          let damage = 5;
-          if (burning) damage += 10 * fireIntensity;
-          if (frozen) damage += 5;
-          
-          takeDamage(damage, x, y);
-          
-          if (burning) {
-            fireLevel = Math.min(100, fireLevel + 5);
-          }
+            World.add(engine.world, [ground, leftWall, rightWall, topWall]);
         }
-      });
-      
-      if (hitSomething) {
-        playSound(400 + Math.random() * 200, 100);
-      }
-      
-      updateUI();
-    });
 
-    igniteButton.addEventListener('click', () => {
-      burning = !burning;
-      frozen = false;
-      flameElements.forEach(el => el.el.remove());
-      flameElements = [];
-      if (burning) {
-        igniteButton.textContent = '🔥 Extinguish';
-        igniteButton.classList.add('danger');
-        freezeButton.textContent = '❄️ Freeze';
-        freezeButton.classList.remove('danger');
-        ragdollParts.slice(0, 6).forEach(part => {
-          const flame = document.createElement('div');
-          flame.className = 'flame';
-          document.body.appendChild(flame);
-          flameElements.push({ el: flame, body: part });
-        });
-        playSound(300, 200);
-      } else {
-        igniteButton.textContent = '🔥 Set on Fire';
-        igniteButton.classList.remove('danger');
-        fireLevel = 0;
-      }
-      updateUI();
-    });
+        // Create ragdoll
+        function makeRagdoll() {
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2 - 100;
 
-    freezeButton.addEventListener('click', () => {
-      frozen = !frozen;
-      burning = false;
-      if (frozen) {
-        freezeButton.textContent = '❄️ Unfreeze';
-        freezeButton.classList.add('danger');
-        igniteButton.textContent = '🔥 Set on Fire';
-        igniteButton.classList.remove('danger');
-        ragdollParts.slice(0, 6).forEach(part => {
-          part.render.fillStyle = '#87CEEB';
-          Body.setVelocity(part, { x: 0, y: 0 });
-        });
-        flameElements.forEach(el => el.el.remove());
-        flameElements = [];
-        fireLevel = 0;
-        playSound(800, 300);
-      } else {
-        freezeButton.textContent = '❄️ Freeze';
-        freezeButton.classList.remove('danger');
-        ragdollParts.slice(0, 6).forEach((part, index) => {
-          const colors = ['', '#8B4513', '#CD853F', '#CD853F', '#4682B4', '#4682B4'];
-          if (colors[index]) part.render.fillStyle = colors[index];
-        });
-      }
-      updateUI();
-    });
-
-    explodeButton.addEventListener('click', () => {
-      if (!dead) {
-        explodeRagdoll();
-      }
-    });
-
-    resetButton.addEventListener('click', () => {
-      World.remove(engine.world, mouseConstraint);
-      World.clear(engine.world, false);
-      
-      currentFaceScale = { x: 1, y: 1 };
-
-      createBoundaries();
-      makeRagdoll();
-      
-      burning = false; frozen = false;
-      flameElements.forEach(el => el.el.remove());
-      flameElements = [];
-      health = 1000; fireLevel = 0; dead = false; hitCount = 0;
-      
-      igniteButton.textContent = '🔥 Set on Fire';
-      igniteButton.classList.remove('danger');
-      freezeButton.textContent = '❄️ Freeze';
-      freezeButton.classList.remove('danger');
-      statusText.textContent = 'Alive';
-      statusText.style.color = '#2ed573';
-      
-      const mouse = Mouse.create(render.canvas);
-      mouseConstraint = MouseConstraint.create(engine, {
-        mouse: mouse,
-        constraint: { stiffness: 0.2, render: { visible: false } }
-      });
-      World.add(engine.world, mouseConstraint);
-      render.mouse = mouse;
-      addMouseDragEvents(); // Re-add drag listeners
-      
-      updateUI();
-      playSound(600, 200);
-    });
-
-    gravitySlider.addEventListener('input', (e) => {
-      gravityScale = parseFloat(e.target.value);
-      engine.world.gravity.y = gravityScale;
-      gravityValue.textContent = gravityScale.toFixed(1);
-    });
-
-    fireSlider.addEventListener('input', (e) => {
-      fireIntensity = parseFloat(e.target.value);
-      fireValue.textContent = fireIntensity.toFixed(1);
-    });
-
-    soundToggle.addEventListener('click', () => {
-      soundEnabled = !soundEnabled;
-      soundToggle.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
-    });
-
-    // Mouse interaction
-    const mouse = Mouse.create(render.canvas);
-    let mouseConstraint = MouseConstraint.create(engine, {
-      mouse: mouse,
-      constraint: { stiffness: 0.2, render: { visible: false } }
-    });
-    
-    // <-- FIX: Function to add drag event listeners
-    function addMouseDragEvents() {
-        Events.on(mouseConstraint, 'startdrag', () => {
-            didDrag = true;
-        });
-    }
-
-    World.add(engine.world, mouseConstraint);
-    render.mouse = mouse;
-    addMouseDragEvents();
-
-
-    // Window resize handler
-    window.addEventListener('resize', () => {
-      render.options.width = window.innerWidth;
-      render.options.height = window.innerHeight;
-      render.canvas.width = window.innerWidth;
-      render.canvas.height = window.innerHeight;
-      // Re-create boundaries on resize to fit new screen size
-      World.clear(engine.world, true); // keep bodies
-      createBoundaries();
-    });
-
-    // Initialize
-    createBoundaries();
-    makeRagdoll();
-    updateUI();
-
-    // Start game loop
-    Engine.run(engine);
-    Render.run(render);
-
-    // Main update loop
-    Events.on(engine, 'afterUpdate', () => {
-      if (burning && !dead) {
-        flameElements.forEach(({ el, body }) => {
-          el.style.left = `${body.position.x - 15}px`;
-          el.style.top = `${body.position.y - 15}px`;
-        });
-        if (Math.random() < 0.1) {
-          fireLevel = Math.min(100, fireLevel + 0.5 * fireIntensity);
-          if (fireLevel > 50) {
-            takeDamage(1, ragdollParts[0].position.x, ragdollParts[0].position.y);
-          }
-        }
-      }
-      
-      if (frozen && !dead) {
-        ragdollParts.slice(0, 6).forEach(part => {
-          Body.setVelocity(part, { x: part.velocity.x * 0.1, y: part.velocity.y * 0.1 });
-        });
-      }
-      
-      updateUI();
-    });
-
-    // <-- FIX: Add collision detection for damage
-    Events.on(engine, 'collisionStart', (event) => {
-        const pairs = event.pairs;
-        for (let i = 0; i < pairs.length; i++) {
-            const pair = pairs[i];
-            const isRagdollCollision = ragdollParts.includes(pair.bodyA) || ragdollParts.includes(pair.bodyB);
-            const isWallCollision = pair.bodyA.isStatic || pair.bodyB.isStatic;
-
-            if (isRagdollCollision && isWallCollision) {
-                const speed = pair.collision.depth;
-                if (speed > .1) { // Threshold to prevent damage from minor bumps
-                    const damage = Math.min(25, Math.round(speed/5)); // Damage proportional to speed, capped at 25
-                    const ragdollPart = ragdollParts.includes(pair.bodyA) ? pair.bodyA : pair.bodyB;
-                    takeDamage(damage, ragdollPart.position.x, ragdollPart.position.y);
-                    playSound(150, 150);
-                    hitCount += 1;
-                    hitCountText.textContent = hitCount;
-                    statusText.textContent = 'Hit!';
+            const head = Bodies.circle(centerX, centerY - 120, 40, {
+                restitution: 0.6,
+                density: 0.002,
+                render: {
+                    sprite: {
+                        texture: currentFaceTexture,
+                        xScale: currentFaceScale.x,
+                        yScale: currentFaceScale.y
+                    }
                 }
+            });
+
+            const body = Bodies.rectangle(centerX, centerY - 40, 30, 80, {
+                restitution: 0.6,
+                density: 0.005,
+                render: { fillStyle: '#8B4513' }
+            });
+
+            const leftArm = Bodies.rectangle(centerX - 45, centerY - 40, 60, 20, {
+                restitution: 0.6,
+                density: 0.001,
+                render: { fillStyle: '#CD853F' }
+            });
+
+            const rightArm = Bodies.rectangle(centerX + 45, centerY - 40, 60, 20, {
+                restitution: 0.6,
+                density: 0.001,
+                render: { fillStyle: '#CD853F' }
+            });
+
+            const leftLeg = Bodies.rectangle(centerX - 15, centerY + 60, 20, 60, {
+                restitution: 0.6,
+                density: 0.003,
+                render: { fillStyle: '#4682B4' }
+            });
+
+            const rightLeg = Bodies.rectangle(centerX + 15, centerY + 60, 20, 60, {
+                restitution: 0.6,
+                density: 0.003,
+                render: { fillStyle: '#4682B4' }
+            });
+
+            const constraints = [
+                Constraint.create({ bodyA: head, bodyB: body, pointA: { x: 0, y: 35 }, pointB: { x: 0, y: -40 }, stiffness: 0.8, render: { visible: false } }),
+                Constraint.create({ bodyA: body, bodyB: leftArm, pointA: { x: -15, y: -30 }, pointB: { x: 30, y: 0 }, stiffness: 0.6, render: { visible: false } }),
+                Constraint.create({ bodyA: body, bodyB: rightArm, pointA: { x: 15, y: -30 }, pointB: { x: -30, y: 0 }, stiffness: 0.6, render: { visible: false } }),
+                Constraint.create({ bodyA: body, bodyB: leftLeg, pointA: { x: -10, y: 40 }, pointB: { x: 0, y: -30 }, stiffness: 0.6, render: { visible: false } }),
+                Constraint.create({ bodyA: body, bodyB: rightLeg, pointA: { x: 10, y: 40 }, pointB: { x: 0, y: -30 }, stiffness: 0.6, render: { visible: false } })
+            ];
+
+            ragdollParts = [head, body, leftArm, rightArm, leftLeg, rightLeg, ...constraints];
+            World.add(engine.world, ragdollParts);
+        }
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        // Resume context on user gesture (important for autoplay restrictions)
+        document.addEventListener('click', () => {
+            if (audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+        });
+
+        // Sound effects
+        function playSound(frequency, duration = 100) {
+            if (!soundEnabled) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            oscillator.frequency.value = frequency;
+            oscillator.type = 'sine';
+
+            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration / 1000);
+
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + duration / 1000);
+        }
+
+
+        // Visual effects
+        function createExplosion(x, y) {
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.style.left = `${x - 50}px`;
+            explosion.style.top = `${y - 50}px`;
+            document.body.appendChild(explosion);
+            setTimeout(() => explosion.remove(), 500);
+        }
+
+        function showDamage(x, y, damage) {
+            const damageText = document.createElement('div');
+            damageText.className = 'damage-text';
+            damageText.textContent = `-${damage}`;
+            damageText.style.left = `${x}px`;
+            damageText.style.top = `${y}px`;
+            document.body.appendChild(damageText);
+            setTimeout(() => damageText.remove(), 1000);
+        }
+
+        // Game mechanics
+        function takeDamage(amount, x, y) {
+            if (dead) return;
+            health = Math.max(0, health - amount);
+            if (amount > 0) {
+                showDamage(x, y, amount);
+                playSound(200 + Math.random() * 200, 150);
+            }
+            if (health <= 0) {
+                explodeRagdoll();
+            }
+            updateUI();
+        }
+
+        function explodeRagdoll() {
+            if (dead) return;
+            dead = true;
+            statusText.textContent = 'Dead';
+            statusText.style.color = '#ff6b6b';
+            ragdollParts.slice(0, 6).forEach(part => {
+                Body.applyForce(part, part.position, { x: (Math.random() - 0.5) * 2, y: (Math.random() - 0.5) * 2 });
+                createExplosion(part.position.x, part.position.y);
+            });
+            flameElements.forEach(el => el.el.remove());
+            flameElements = [];
+            burning = false;
+            playSound(100, 500);
+        }
+
+        function updateUI() {
+            healthText.textContent = Math.round(health);
+            fireText.textContent = Math.round(fireLevel);
+            hitCountText.textContent = hitCount;
+            healthBar.style.width = `${health / 10}%`;
+            fireBar.style.width = `${fireLevel}%`;
+            healthBar.style.background = '';
+            healthBar.className = 'stat-fill health-bar';
+            if (health <= 600 && health > 300) {
+                healthBar.style.background = 'linear-gradient(90deg, #ffa726, #ff7043)';
+            } else if (health <= 300) {
+                healthBar.style.background = 'linear-gradient(90deg, #ff6b6b, #ee5a24)';
             }
         }
-    });
 
-  </script>
+        let outerFaceImage = null;
+
+        // Event listeners
+        faceInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                const faceImage = new Image();
+                faceImage.onload = () => {
+                    const head = ragdollParts[0];
+                    if (head && head.render && head.render.sprite) {
+                        currentFaceTexture = faceImage.src; // <-- FIX: Store new texture
+                        // <-- FIX: Store new scale for reset
+                        currentFaceScale = {
+                            x: 80 / faceImage.width,
+                            y: 80 / faceImage.height
+                        };
+                        head.render.sprite.texture = currentFaceTexture;
+                        head.render.sprite.xScale = currentFaceScale.x;
+                        head.render.sprite.yScale = currentFaceScale.y;
+                    }
+                };
+                faceImage.src = event.target.result;
+            };
+            outerFaceImage = file;
+            reader.readAsDataURL(file);
+        });
+
+        canvas.addEventListener('click', (e) => {
+            // <-- FIX: Check drag flag to differentiate click from drag-release
+            if (didDrag) {
+                didDrag = false;
+                return;
+            }
+            if (dead) return;
+
+            const rect = canvas.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            let hitSomething = false;
+
+            ragdollParts.slice(0, 6).forEach(part => {
+                const dx = x - part.position.x;
+                const dy = y - part.position.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (dist < 60) {
+                    hitSomething = true;
+                    hitCount++;
+
+                    const force = 0.3;
+                    Body.applyForce(part, part.position, {
+                        x: (dx / dist) * force + (Math.random() - 0.5) * 0.1,
+                        y: (dy / dist) * force - 0.1
+                    });
+
+                    let damage = 5;
+                    if (burning) damage += 10 * fireIntensity;
+                    if (frozen) damage += 5;
+
+                    takeDamage(damage, x, y);
+
+                    if (burning) {
+                        fireLevel = Math.min(100, fireLevel + 5);
+                    }
+                }
+            });
+
+            if (hitSomething) {
+                playSound(400 + Math.random() * 200, 100);
+            }
+
+            updateUI();
+        });
+
+        igniteButton.addEventListener('click', () => {
+            burning = !burning;
+            frozen = false;
+            flameElements.forEach(el => el.el.remove());
+            flameElements = [];
+            if (burning) {
+                igniteButton.textContent = '🔥 Extinguish';
+                igniteButton.classList.add('danger');
+                freezeButton.textContent = '❄️ Freeze';
+                freezeButton.classList.remove('danger');
+                ragdollParts.slice(0, 6).forEach(part => {
+                    const flame = document.createElement('div');
+                    flame.className = 'flame';
+                    document.body.appendChild(flame);
+                    flameElements.push({ el: flame, body: part });
+                });
+                playSound(300, 200);
+            } else {
+                igniteButton.textContent = '🔥 Set on Fire';
+                igniteButton.classList.remove('danger');
+                fireLevel = 0;
+            }
+            updateUI();
+        });
+
+        freezeButton.addEventListener('click', () => {
+            frozen = !frozen;
+            burning = false;
+            if (frozen) {
+                freezeButton.textContent = '❄️ Unfreeze';
+                freezeButton.classList.add('danger');
+                igniteButton.textContent = '🔥 Set on Fire';
+                igniteButton.classList.remove('danger');
+                ragdollParts.slice(0, 6).forEach(part => {
+                    part.render.fillStyle = '#87CEEB';
+                    Body.setVelocity(part, { x: 0, y: 0 });
+                });
+                flameElements.forEach(el => el.el.remove());
+                flameElements = [];
+                fireLevel = 0;
+                playSound(800, 300);
+            } else {
+                freezeButton.textContent = '❄️ Freeze';
+                freezeButton.classList.remove('danger');
+                ragdollParts.slice(0, 6).forEach((part, index) => {
+                    const colors = ['', '#8B4513', '#CD853F', '#CD853F', '#4682B4', '#4682B4'];
+                    if (colors[index]) part.render.fillStyle = colors[index];
+                });
+            }
+            updateUI();
+        });
+
+        explodeButton.addEventListener('click', () => {
+            if (!dead) {
+                explodeRagdoll();
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            World.remove(engine.world, mouseConstraint);
+            World.clear(engine.world, false);
+
+            currentFaceScale = { x: 1, y: 1 };
+
+            createBoundaries();
+            makeRagdoll();
+
+            burning = false; frozen = false;
+            flameElements.forEach(el => el.el.remove());
+            flameElements = [];
+            health = 1000; fireLevel = 0; dead = false; hitCount = 0;
+
+            igniteButton.textContent = '🔥 Set on Fire';
+            igniteButton.classList.remove('danger');
+            freezeButton.textContent = '❄️ Freeze';
+            freezeButton.classList.remove('danger');
+            statusText.textContent = 'Alive';
+            statusText.style.color = '#2ed573';
+
+            const mouse = Mouse.create(render.canvas);
+            mouseConstraint = MouseConstraint.create(engine, {
+                mouse: mouse,
+                constraint: { stiffness: 0.2, render: { visible: false } }
+            });
+            World.add(engine.world, mouseConstraint);
+            render.mouse = mouse;
+            addMouseDragEvents(); // Re-add drag listeners
+
+            updateUI();
+            playSound(600, 200);
+        });
+
+        gravitySlider.addEventListener('input', (e) => {
+            gravityScale = parseFloat(e.target.value);
+            engine.world.gravity.y = gravityScale;
+            gravityValue.textContent = gravityScale.toFixed(1);
+        });
+
+        fireSlider.addEventListener('input', (e) => {
+            fireIntensity = parseFloat(e.target.value);
+            fireValue.textContent = fireIntensity.toFixed(1);
+        });
+
+        soundToggle.addEventListener('click', () => {
+            soundEnabled = !soundEnabled;
+            soundToggle.textContent = soundEnabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+        });
+
+        // Mouse interaction
+        const mouse = Mouse.create(render.canvas);
+        let mouseConstraint = MouseConstraint.create(engine, {
+            mouse: mouse,
+            constraint: { stiffness: 0.2, render: { visible: false } }
+        });
+
+        // <-- FIX: Function to add drag event listeners
+        function addMouseDragEvents() {
+            Events.on(mouseConstraint, 'startdrag', () => {
+                didDrag = true;
+            });
+        }
+
+        World.add(engine.world, mouseConstraint);
+        render.mouse = mouse;
+        addMouseDragEvents();
+
+
+        // Window resize handler
+        window.addEventListener('resize', () => {
+            render.options.width = window.innerWidth;
+            render.options.height = window.innerHeight;
+            render.canvas.width = window.innerWidth;
+            render.canvas.height = window.innerHeight;
+            // Re-create boundaries on resize to fit new screen size
+            World.clear(engine.world, true); // keep bodies
+            createBoundaries();
+        });
+
+        // Initialize
+        createBoundaries();
+        makeRagdoll();
+        updateUI();
+
+        // Start game loop
+        Engine.run(engine);
+        Render.run(render);
+
+        // Main update loop
+        Events.on(engine, 'afterUpdate', () => {
+            if (burning && !dead) {
+                flameElements.forEach(({ el, body }) => {
+                    el.style.left = `${body.position.x - 15}px`;
+                    el.style.top = `${body.position.y - 15}px`;
+                });
+                if (Math.random() < 0.1) {
+                    fireLevel = Math.min(100, fireLevel + 0.5 * fireIntensity);
+                    if (fireLevel > 50) {
+                        takeDamage(1, ragdollParts[0].position.x, ragdollParts[0].position.y);
+                    }
+                }
+            }
+
+            if (frozen && !dead) {
+                ragdollParts.slice(0, 6).forEach(part => {
+                    Body.setVelocity(part, { x: part.velocity.x * 0.1, y: part.velocity.y * 0.1 });
+                });
+            }
+
+            updateUI();
+        });
+
+        // <-- FIX: Add collision detection for damage
+        Events.on(engine, 'collisionStart', (event) => {
+            const pairs = event.pairs;
+            for (let i = 0; i < pairs.length; i++) {
+                const pair = pairs[i];
+                const isRagdollCollision = ragdollParts.includes(pair.bodyA) || ragdollParts.includes(pair.bodyB);
+                const isWallCollision = pair.bodyA.isStatic || pair.bodyB.isStatic;
+
+                if (isRagdollCollision && isWallCollision) {
+                    const speed = pair.collision.depth;
+                    if (speed > .1) { // Threshold to prevent damage from minor bumps
+                        const damage = Math.min(25, Math.round(speed / 5)); // Damage proportional to speed, capped at 25
+                        const ragdollPart = ragdollParts.includes(pair.bodyA) ? pair.bodyA : pair.bodyB;
+                        takeDamage(damage, ragdollPart.position.x, ragdollPart.position.y);
+                        playSound(150, 150);
+                        hitCount += 1;
+                        hitCountText.textContent = hitCount;
+                        statusText.textContent = 'Hit!';
+                    }
+                }
+            }
+        });
+
+    </script>
 </body>
 
 </html>
